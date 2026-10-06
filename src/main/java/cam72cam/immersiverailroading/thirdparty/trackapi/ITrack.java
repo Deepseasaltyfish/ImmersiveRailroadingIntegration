@@ -1,5 +1,7 @@
 package cam72cam.immersiverailroading.thirdparty.trackapi;
 
+import cam72cam.immersiverailroading.track.graph.TrackMultiGeometrySegment;
+import cam72cam.immersiverailroading.track.graph.WorldData;
 import cam72cam.mod.math.Vec3d;
 import cam72cam.mod.math.Vec3i;
 import cam72cam.mod.world.World;
@@ -35,6 +37,10 @@ public interface ITrack {
             return ((ITrack)((TileEntityTickableTrack) track).instance());
         }
         return from(track);
+    }
+
+    static TrackMultiGeometrySegment getTrackBlock(World world, Vec3d pos) { // offworld
+        return WorldData.get(world).getTrackBlock(new Vec3i(pos)); //todo graph
     }
 
     double[] getTrackGauges();

@@ -1,11 +1,19 @@
 package cam72cam.immersiverailroading.thirdparty.trackapi;
 
+import cam72cam.immersiverailroading.track.graph.OffWorldMovementTrack;
+import cam72cam.immersiverailroading.track.graph.TrackEdge;
 import cam72cam.mod.math.Vec3d;
+import cam72cam.mod.world.World;
 import trackapi.lib.PathingData;
 
 public class IRPathingData extends trackapi.lib.PathingData {
     private Vec3d posCache;
     private double deltaMovement;
+
+    // 拓扑模式状态
+    private World topoWorld;
+    private TrackEdge topoEdge;
+    private double topoT;
 
     public IRPathingData(Vec3d position, double roll) {
         this(position, roll, 0);
@@ -17,7 +25,26 @@ public class IRPathingData extends trackapi.lib.PathingData {
         this.deltaMovement = deltaMovement;
     }
 
+    public IRPathingData(World world, Vec3d position, double roll) {
+        this(world, position, roll, 0);
+    }
+
+    protected IRPathingData(World world, Vec3d position, double roll, double deltaMovement) {
+        super(position.internal(), roll);
+        this.posCache = position;
+        this.deltaMovement = deltaMovement;
+        this.topoWorld = world;
+    }
+
     public Vec3d getUMCPos() {
+        return posCache;
+    }
+
+    /** 拓扑模式专用。非拓扑模式等价于 getUMCPos。 */
+    public Vec3d getTopoPos() {
+        if (topoEdge != null && topoWorld != null) {
+            return OffWorldMovementTrack.positionOnEdge(topoEdge, topoT, topoWorld);
+        }
         return posCache;
     }
 
@@ -64,7 +91,11 @@ public class IRPathingData extends trackapi.lib.PathingData {
 
     @Override
     public IRPathingData clone() {
-        return new IRPathingData(this.posCache, this.getRoll(), this.deltaMovement);
+        IRPathingData c = new IRPathingData(this.posCache, this.getRoll(), this.deltaMovement);
+        c.topoWorld = this.topoWorld;
+        c.topoEdge = this.topoEdge;
+        c.topoT = this.topoT;
+        return c;
     }
 
     public static IRPathingData wrap(trackapi.lib.PathingData inputData) {
@@ -88,5 +119,29 @@ public class IRPathingData extends trackapi.lib.PathingData {
             this.posCache = newPos;
         }
         return this;
+    }
+
+    // ========== 拓扑模式 ==========
+
+    public World getTopoWorld() {
+        return topoWorld;
+    }
+
+    public void setTopoWorld(World world) {
+        this.topoWorld = world;
+    }
+
+    public TrackEdge getTopoEdge() {
+        return topoEdge;
+    }
+
+    public double getTopoT() {
+        return topoT;
+    }
+
+    public void advanceTo(TrackEdge nextEdge, double nextT, double nextRoll) {
+        this.topoEdge = nextEdge;
+        this.topoT = nextT;
+        this.setRoll(nextRoll);
     }
 }
