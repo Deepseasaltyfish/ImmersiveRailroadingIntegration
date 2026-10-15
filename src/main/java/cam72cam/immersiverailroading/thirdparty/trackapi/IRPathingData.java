@@ -10,7 +10,7 @@ public class IRPathingData extends trackapi.lib.PathingData {
     private Vec3d posCache;
     private double deltaMovement;
 
-    // 拓扑模式状态
+    // topo
     private World topoWorld;
     private TrackEdge topoEdge;
     private double topoT;
@@ -40,7 +40,7 @@ public class IRPathingData extends trackapi.lib.PathingData {
         return posCache;
     }
 
-    /** 拓扑模式专用。非拓扑模式等价于 getUMCPos。 */
+    /* topo only, it will be equals to getUMCPos if not used in topo case */
     public Vec3d getTopoPos() {
         if (topoEdge != null && topoWorld != null) {
             return OffWorldMovementTrack.positionOnEdge(topoEdge, topoT, topoWorld);
