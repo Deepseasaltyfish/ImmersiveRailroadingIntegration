@@ -40,14 +40,6 @@ public class IRPathingData extends trackapi.lib.PathingData {
         return posCache;
     }
 
-    /* topo only, it will be equals to getUMCPos if not used in topo case */
-    public Vec3d getTopoPos() {
-        if (topoEdge != null && topoWorld != null) {
-            return OffWorldMovementTrack.positionOnEdge(topoEdge, topoT, topoWorld);
-        }
-        return posCache;
-    }
-
     public IRPathingData setUMCPos(Vec3d pos) {
         return setUMCPos(pos, false);
     }
@@ -121,8 +113,6 @@ public class IRPathingData extends trackapi.lib.PathingData {
         return this;
     }
 
-    // ========== 拓扑模式 ==========
-
     public World getTopoWorld() {
         return topoWorld;
     }
@@ -143,5 +133,9 @@ public class IRPathingData extends trackapi.lib.PathingData {
         this.topoEdge = nextEdge;
         this.topoT = nextT;
         this.setRoll(nextRoll);
+        if (topoWorld != null && nextEdge != null) {
+            Vec3d newPos = OffWorldMovementTrack.positionOnEdge(nextEdge, nextT, topoWorld);
+            this.setPos(newPos.internal());
+        }
     }
 }
