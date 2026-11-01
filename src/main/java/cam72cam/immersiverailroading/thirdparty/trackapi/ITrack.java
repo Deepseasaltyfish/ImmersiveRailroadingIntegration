@@ -40,7 +40,7 @@ public interface ITrack {
     }
 
     static TrackMultiGeometrySegment getTrackBlock(World world, Vec3d pos) { // offworld
-        return WorldData.get(world).getTrackBlock(new Vec3i(pos)); //todo graph
+        return WorldData.get(world).getTrackBlockLoaded(new Vec3i(pos)); //todo graph?
     }
 
     double[] getTrackGauges();
